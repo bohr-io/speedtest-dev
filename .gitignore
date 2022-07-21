@@ -104,3 +104,7 @@ dist
 .tern-port
 bohr.env
 dist-api/core.zip
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
