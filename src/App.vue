@@ -1,41 +1,72 @@
-<script setup lang="ts"></script>
-
+<!-- eslint-disable no-undef -->
+<!-- eslint-disable no-undef -->
 <template>
   <main>
     <nav class="navbar">
       <img src="/src/assets/svg/logo.svg" class="navbar__logo" alt="" />
     </nav>
+
     <section class="section__block">
+      <LoadingComponent v-if="isLoading" />
       <div class="speed__block">
-        <h3>Speed</h3>
+        <template v-if="speedBlockLoading">
+          <div class="speed__block--loading">
+            <img
+              src="/src/assets/svg/logo.svg"
+              class="speed__block--loading-image"
+            />
+          </div>
+        </template>
+
+        <template v-else>
+          <img src="/src/assets/svg/logo.svg" class="speed__block--image" />
+          <div class="speed__block--content">
+            <div class="speed__block--data">
+              <span class="speed__block--data-title">Download:</span>
+              <p class="speed__block--data-count">24.2</p>
+            </div>
+            <div class="speed__block--data">
+              <span class="speed__block--data-title">Download:</span>
+              <p class="speed__block--data-count">24.2</p>
+            </div>
+            <div class="speed__block--data">
+              <span class="speed__block--data-title">Download:</span>
+              <p class="speed__block--data-count">24.2</p>
+            </div>
+          </div>
+        </template>
       </div>
       <div class="ip__block">
-        <div style="display: flex; align-items: center; margin: 8px 0">
+        <div class="ip__block--content">
           <img src="/src/assets/svg/ip.svg" alt="" />
-          <div class="" style="margin-left: 8px">
-            <p style="margin: 0; font-size: 13px">Your IP address</p>
-            <h3 style="margin: 6px 0; font-size: 17px">192.108.0.1</h3>
+          <div class="ip__block--data">
+            <p class="ip__block--data-title">Your IP address</p>
+            <h3 class="ip__block--data-text">{{ locationData.ip }}</h3>
           </div>
         </div>
-        <div style="display: flex; align-items: center; margin: 8px 0">
+        <div class="ip__block--content">
           <img src="/src/assets/svg/internet.svg" alt="" />
-          <div class="" style="margin-left: 8px">
-            <p style="margin: 0 0; font-size: 13px">Your network</p>
-            <h3 style="margin: 6px 0; font-size: 17px">Ligga Telecom</h3>
+          <div class="ip__block--data">
+            <p class="ip__block--data-title">Your network</p>
+            <h3 class="ip__block--data-text">{{ locationData.network }}</h3>
           </div>
         </div>
-        <div style="display: flex; align-items: center; margin: 8px 0">
+        <div class="ip__block--content">
           <img src="/src/assets/svg/marker-orange.svg" alt="" />
-          <div class="" style="margin-left: 8px">
-            <p style="margin: 0; font-size: 13px">Your location</p>
-            <h3 style="margin: 6px 0; font-size: 17px">Passo do Vigário</h3>
+          <div class="ip__block--data">
+            <p class="ip__block--data-title">Your location</p>
+            <h3 class="ip__block--data-text orange">
+              {{ locationData.userLocation }}
+            </h3>
           </div>
         </div>
-        <div style="display: flex; align-items: center; margin: 8px 0">
+        <div class="ip__block--content">
           <img src="/src/assets/svg/marker-red.svg" alt="" />
-          <div class="" style="margin-left: 8px">
-            <p style="margin: 0; font-size: 13px">Server location</p>
-            <h3 style="margin: 6px 0; font-size: 17px">Porto Alegre</h3>
+          <div class="ip__block--data">
+            <p class="ip__block--data-title">Server location</p>
+            <h3 class="ip__block--data-text red">
+              {{ locationData.serverLocation }}
+            </h3>
           </div>
         </div>
       </div>
@@ -50,7 +81,7 @@
           display: block;
         "
       /> -->
-      <div id="map"></div>
+      <div ref="mapDiv" id="map"></div>
     </section>
     <footer class="navbar">
       <img
@@ -61,73 +92,71 @@
     </footer>
   </main>
 </template>
+<script>
+import { ref, reactive, computed, onMounted } from "vue";
+import { useGeolocation } from "./useGeolocation.js";
+import LoadingComponent from "./components/LoadingComponent.vue";
+import { Loader } from "@googlemaps/js-api-loader";
 
-<style>
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+const GOOGLE_MAPS_API_KEY = "AIzaSyDJgsrkslJjQjop3nxhLoRt-XdubE-3_y4";
 
-#map {
-  max-width: 100vw;
-  height: calc(100vh - 100px);
-  z-index: 100;
-  box-sizing: border-box;
-}
+import styles from "./mapStyle.js";
+export default {
+  components: {
+    LoadingComponent,
+  },
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+  setup() {
+    const isLoading = ref(true);
+    const speedBlockLoading = ref(true);
+    const locationData = reactive({
+      ip: "192.108.0.1",
+      network: "Ligga Telecom",
+      userLocation: "Passo do Vigário, RS",
+      serverLocation: "Porto Alegre, RS",
+    });
+    const { coords } = useGeolocation();
 
-body {
-  font-family: "Inter", sans-serif;
-}
+    const userPos = computed(() => ({
+      lat: coords.value.latitude,
+      lng: coords.value.longitude,
+    }));
 
-.navbar {
-  display: flex;
-  align-items: center;
-  height: 50px;
-  background-color: hsla(25, 85%, 5%, 1);
-  padding: 0 16px;
-}
+    const loader = new Loader({ apiKey: GOOGLE_MAPS_API_KEY });
+    const mapDiv = ref(null);
+    onMounted(async () => {
+      await loader.load();
 
-.navbar__logo {
-  width: 42px;
-}
+      new google.maps.Map(mapDiv.value, {
+        center: userPos.value,
+        zoom: 9,
+        styles: styles,
+      });
+    });
 
-.navbar__footer--logo {
-  height: 20px;
-  margin-left: auto;
-}
+    return {
+      isLoading,
+      speedBlockLoading,
+      locationData,
+      userPos,
+      mapDiv,
+      styles,
+    };
+  },
 
-.section__block {
-  position: relative;
-  z-index: 101;
-}
+  mounted() {
+    console.log(this.userPos);
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 3000);
 
-.speed__block {
-  top: 16px;
-  right: 16px;
-  position: absolute;
-  border-radius: 8px;
-  padding: 8px 16px;
-  background-color: #f1f1f1;
-  display: block;
-  z-index: 101;
-}
+    setTimeout(() => {
+      this.speedBlockLoading = false;
+    }, 5000);
+  },
 
-.ip__block {
-  bottom: 16px;
-  left: 16px;
-  position: absolute;
-  border-radius: 8px;
-  padding: 16px 24px;
-  background-color: #f1f1f1;
-  display: block;
-  z-index: 101;
-}
-</style>
+  updated() {
+    console.log(this.userPos, this.styles);
+  },
+};
+</script>
