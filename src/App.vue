@@ -101,6 +101,9 @@ import { Loader } from "@googlemaps/js-api-loader";
 const GOOGLE_MAPS_API_KEY = "AIzaSyDJgsrkslJjQjop3nxhLoRt-XdubE-3_y4";
 
 import styles from "./mapStyle.js";
+import userSvgMarker from "./assets/svg/marker-orange.svg";
+import serverSvgMarker from "./assets/svg/marker-red.svg";
+
 export default {
   components: {
     LoadingComponent,
@@ -122,16 +125,55 @@ export default {
       lng: coords.value.longitude,
     }));
 
+    const serverPos = computed(() => ({
+      lat: -30.033056,
+      lng: -51.23,
+    }));
+
+    const userMarkerIcon = ref(null);
+    const serverMarkerIcon = ref(null);
+
     const loader = new Loader({ apiKey: GOOGLE_MAPS_API_KEY });
+
     const mapDiv = ref(null);
+    const map = ref(null);
+
     onMounted(async () => {
       await loader.load();
 
-      new google.maps.Map(mapDiv.value, {
-        center: userPos.value,
+      map.value = new google.maps.Map(mapDiv.value, {
+        // center: userPos.value,
+        disableDefaultUI: true,
         zoom: 9,
         styles: styles,
       });
+
+      userMarkerIcon.value = userSvgMarker;
+      serverMarkerIcon.value = serverSvgMarker;
+
+      new google.maps.Marker({
+        position: userPos.value,
+        map: map.value,
+        icon: userMarkerIcon.value,
+      });
+
+      new google.maps.Marker({
+        position: serverPos.value,
+        map: map.value,
+        icon: serverMarkerIcon.value,
+      });
+
+      const bounds = new google.maps.LatLngBounds();
+
+      bounds.extend(userPos.value);
+      bounds.extend(serverPos.value);
+
+      map.value.fitBounds(bounds);
+
+      // const strictBounds = new google.maps.LatLngBounds(
+      //   new google.maps.LatLng(userPos.value.lat, userPos.value.lng),
+      //   new google.maps.LatLng(serverPos.value.lat, serverPos.value.lng)
+      // );
     });
 
     return {
