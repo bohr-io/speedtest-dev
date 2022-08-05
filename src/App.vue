@@ -81,7 +81,7 @@
           display: block;
         "
       /> -->
-      <div ref="mapDiv" id="map"></div>
+      <MapsComponent :userPosition="userPos" :serverPosition="serverPos" />
     </section>
     <footer class="navbar">
       <img
@@ -96,17 +96,12 @@
 import { ref, reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "./useGeolocation.js";
 import LoadingComponent from "./components/LoadingComponent.vue";
-import { Loader } from "@googlemaps/js-api-loader";
-
-const GOOGLE_MAPS_API_KEY = "AIzaSyDJgsrkslJjQjop3nxhLoRt-XdubE-3_y4";
-
-import styles from "./mapStyle.js";
-import userSvgMarker from "./assets/svg/marker-orange.svg";
-import serverSvgMarker from "./assets/svg/marker-red.svg";
+import MapsComponent from "./components/MapsComponent.vue";
 
 export default {
   components: {
     LoadingComponent,
+    MapsComponent,
   },
 
   setup() {
@@ -130,64 +125,16 @@ export default {
       lng: -51.23,
     }));
 
-    const userMarkerIcon = ref(null);
-    const serverMarkerIcon = ref(null);
-
-    const loader = new Loader({ apiKey: GOOGLE_MAPS_API_KEY });
-
-    const mapDiv = ref(null);
-    const map = ref(null);
-
-    onMounted(async () => {
-      await loader.load();
-
-      map.value = new google.maps.Map(mapDiv.value, {
-        // center: userPos.value,
-        disableDefaultUI: true,
-        zoom: 9,
-        styles: styles,
-      });
-
-      userMarkerIcon.value = userSvgMarker;
-      serverMarkerIcon.value = serverSvgMarker;
-
-      new google.maps.Marker({
-        position: userPos.value,
-        map: map.value,
-        icon: userMarkerIcon.value,
-      });
-
-      new google.maps.Marker({
-        position: serverPos.value,
-        map: map.value,
-        icon: serverMarkerIcon.value,
-      });
-
-      const bounds = new google.maps.LatLngBounds();
-
-      bounds.extend(userPos.value);
-      bounds.extend(serverPos.value);
-
-      map.value.fitBounds(bounds);
-
-      // const strictBounds = new google.maps.LatLngBounds(
-      //   new google.maps.LatLng(userPos.value.lat, userPos.value.lng),
-      //   new google.maps.LatLng(serverPos.value.lat, serverPos.value.lng)
-      // );
-    });
-
     return {
       isLoading,
       speedBlockLoading,
       locationData,
       userPos,
-      mapDiv,
-      styles,
+      serverPos,
     };
   },
 
   mounted() {
-    console.log(this.userPos);
     setTimeout(() => {
       this.isLoading = false;
     }, 3000);
@@ -198,7 +145,7 @@ export default {
   },
 
   updated() {
-    console.log(this.userPos, this.styles);
+    // console.log(this.userPos, this.styles);
   },
 };
 </script>
