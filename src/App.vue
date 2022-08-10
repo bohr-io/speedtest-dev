@@ -90,6 +90,7 @@
         alt=""
       />
     </footer>
+    <SpeedometerComponent />
   </main>
 </template>
 <script>
@@ -97,11 +98,12 @@ import { ref, reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "./useGeolocation.js";
 import LoadingComponent from "./components/LoadingComponent.vue";
 import MapsComponent from "./components/MapsComponent.vue";
-
+import SpeedometerComponent from "./components/SpeedometerComponent.vue";
 export default {
   components: {
     LoadingComponent,
     MapsComponent,
+    SpeedometerComponent,
   },
 
   setup() {
