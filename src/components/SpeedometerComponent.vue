@@ -28,7 +28,7 @@
       fill="#F4C330"
     />
 
-    <g class="pointer" style="transform: rotate(0deg)">
+    <g class="pointer" :style="{ transform: 'rotate(' + degSpeed + ')' }">
       <path
         d="M52.2229 59.5477C52.1703 59.7005 52.088 59.8411 51.981 59.9611C51.8739 60.0812 51.7443 60.1783 51.5997 60.2468C44.6755 63.8356 37.7532 67.4272 30.8327 71.0216C24.8563 73.2029 18.6979 74.85 12.6746 76.8439C12.2058 76.9977 11.748 77.2746 11.2157 77.1236C10.7815 76.1609 10.4701 75.1459 10.2891 74.1034C14.0233 72.5821 17.7354 71.0468 21.4861 69.5479C26.0753 67.7078 30.6782 65.9125 35.2757 64.0696C38.803 62.6518 42.3111 61.1864 45.8329 59.7546C47.5704 59.0471 49.3189 58.3564 51.0729 57.6853C51.8946 57.4055 52.6432 56.9409 53.2627 56.3262C53.5633 57.6237 53.0917 58.6472 52.2229 59.5477Z"
         fill="#D6D5D5"
@@ -62,8 +62,8 @@ export default {
   },
 
   computed: {
-    setSpeed() {
-      let speed;
+    degSpeed() {
+      let speed = "0deg";
       if (this.speedRate >= 10) {
         speed = "10deg";
       }
@@ -79,7 +79,7 @@ export default {
 <style>
 .pointer {
   transform-origin: 49.79159663865546% 67.80898876404494%;
-  transition: transform 0.2s ease-in;
+  transition: transform 0.3s ease-in;
   /* transform: var(--pointer-transform); */
 }
 </style>

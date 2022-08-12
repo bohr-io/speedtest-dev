@@ -13,6 +13,7 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.14.3",
     "@vueuse/core": "^9.0.2",
+    "floating-vue": "^2.0.0-beta.19",
     "vue": "^3.2.37"
   },
   "devDependencies": {
