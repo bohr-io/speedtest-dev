@@ -145,6 +145,7 @@
 </template>
 <script>
 import { ref, reactive, computed } from "vue";
+import speedTestService from "./speedTest";
 import { useGeolocation } from "./useGeolocation.js";
 import LoadingComponent from "./components/LoadingComponent.vue";
 import MapsComponent from "./components/MapsComponent.vue";
@@ -157,6 +158,7 @@ export default {
   },
 
   setup() {
+    const service = new speedTestService();
     const speedTest = reactive({
       download: "",
       upload: "",
@@ -196,6 +198,7 @@ export default {
     }));
 
     return {
+      service,
       speedTest,
       isLoading,
       speedBlockLoading,
@@ -222,14 +225,16 @@ export default {
       };
     }, 5000);
 
-    setTimeout(() => {
-      this.speedBlockLoading = false;
-      this.speedTest = {
-        download: "24.2",
-        upload: "14.3",
-        ping: "20.4",
-      };
-    }, 7000);
+    // setTimeout(async () => {
+    //   this.speedBlockLoading = false;
+    //   this.speedTest = {
+    //     download: "24.2",
+    //     upload: "14.3",
+    //     ping: "20.4",
+    //   };
+    // }, 7000);
+
+    startSpeedTest();
   },
 
   updated() {
@@ -240,6 +245,32 @@ export default {
     restartTest() {
       console.log("Restart test");
     },
+    async startSpeedTest() {
+      this.speedBlockLoading = false;
+      this.speedTest = {
+        download: "",
+        upload: "",
+        ping: "",
+      };
+      await this.startDownloadTest();
+      await this.startUploadTest();
+    },
+    async startDownloadTest() {
+      this.speedTest.download = await this.service.testDownloadSpeed(100000);
+      this.speedTest.download = await this.service.testDownloadSpeed(1000000);
+      this.speedTest.download = await this.service.testDownloadSpeed(10000000);
+      this.speedTest.download = await this.service.testDownloadSpeed(25000000);
+      this.speedTest.download = await this.service.testDownloadSpeed(100000000);
+      return true;
+    },
+    async startUploadTest() {
+      this.speedTest.upload = await this.service.testUploadSpeed(100000);
+      this.speedTest.upload = await this.service.testUploadSpeed(1000000);
+      this.speedTest.upload = await this.service.testUploadSpeed(10000000);
+      this.speedTest.upload = await this.service.testUploadSpeed(25000000);
+      this.speedTest.upload = await this.service.testUploadSpeed(100000000);
+      return true;
+    }
   },
 };
 </script>
