@@ -3,10 +3,24 @@ export default class {
         this.API_URL = API_URL || "https://bohr.io";
     }
 
+    async addressSpeed() {
+        const cacheBuster = "?nnn=" + (new Date()).getTime();
+        const addressUrlPath = `${this.API_URL}/bohr_speed_address`;
+        const request = new Request(addressUrlPath + cacheBuster);
+
+        const response = await fetch(request);
+
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+
+        return await response.json();
+    }
+
     async testDownloadSpeed(fileSize) {
         const cacheBuster = "?nnn=" + (new Date()).getTime();
-        const downAddr = `${this.API_URL}/bohr_speed_download?bytes=${fileSize}`;
-        const request = new Request(downAddr + cacheBuster);
+        const downUrlPath = `${this.API_URL}/bohr_speed_download?bytes=${fileSize}`;
+        const request = new Request(downUrlPath + cacheBuster);
       
         const response = await fetch(request);
         
@@ -27,8 +41,8 @@ export default class {
 
     async testUploadSpeed(fileSize) {
         const cacheBuster = "?nnn=" + (new Date()).getTime();
-        const downAddr = `${this.API_URL}/bohr_speed_upload?bytes=${fileSize}`;
-        const request = new Request(downAddr + cacheBuster);
+        const upUrlPath = `${this.API_URL}/bohr_speed_upload?bytes=${fileSize}`;
+        const request = new Request(upUrlPath + cacheBuster);
       
         const response = await fetch(request, {
             method: 'POST',

@@ -136,7 +136,7 @@
           </div>
         </div>
       </div>
-      <MapsComponent :userPosition="userPos" :serverPosition="serverPos" />
+      <MapsComponent v-if="userPos && serverPos" :userPosition="userPos" :serverPosition="serverPos" />
     </section>
     <footer class="navbar">
       <img src="/src/assets/svg/footer-logo.svg" class="navbar__footer--logo" />
@@ -146,7 +146,7 @@
 <script>
 import { ref, reactive, computed } from "vue";
 import speedTestService from "./speedTest";
-import { useGeolocation } from "./useGeolocation.js";
+// import { useGeolocation } from "./useGeolocation.js";
 import LoadingComponent from "./components/LoadingComponent.vue";
 import MapsComponent from "./components/MapsComponent.vue";
 import SpeedometerComponent from "./components/SpeedometerComponent.vue";
@@ -185,17 +185,11 @@ export default {
       "Também conhecido como teste de latência, o primeiro dado a ser mensurado no velocímetro é o ping, importantíssimo para usuários que precisam de conexões estáveis. Essa informação ajuda a avaliar a estabilidade da sua conexão, contabilizando o tempo que leva para que um pacote de dados percorra o trajeto de ida e volta do computador de origem ao do servidor de destino."
     );
 
-    const { coords } = useGeolocation();
+    // const { coords } = useGeolocation();
 
-    const userPos = computed(() => ({
-      lat: coords.value.latitude,
-      lng: coords.value.longitude,
-    }));
+    const userPos = ref(undefined);
 
-    const serverPos = computed(() => ({
-      lat: -30.033056,
-      lng: -51.23,
-    }));
+    const serverPos = ref(undefined);
 
     return {
       service,
@@ -212,18 +206,35 @@ export default {
   },
 
   mounted() {
+    const address = this.service.addressSpeed().then((data) => {
+      this.locationData = {
+        ip: data.remoteAddress,
+        network: data.asOrganization,
+        userLocation: `${data.city}, ${data.region}`,
+        serverLocation: "",
+      }
+      this.userPos = {
+        lat: data.latitude,
+        lng: data.longitude,
+      }
+      this.serverPos = {
+        lat: -30.033056,
+        lng: -51.23,
+      }
+    });
+    
     setTimeout(() => {
       this.isLoading = false;
     }, 3000);
 
-    setTimeout(() => {
-      this.locationData = {
-        ip: "192.108.0.1",
-        network: "Ligga Telecom",
-        userLocation: "Passo do Vigário, RS",
-        serverLocation: "Porto Alegre, RS",
-      };
-    }, 5000);
+    // setTimeout(() => {
+    //   this.locationData = {
+    //     ip: "192.108.0.1",
+    //     network: "Ligga Telecom",
+    //     userLocation: "Passo do Vigário, RS",
+    //     serverLocation: "Porto Alegre, RS",
+    //   };
+    // }, 5000);
 
     // setTimeout(async () => {
     //   this.speedBlockLoading = false;
