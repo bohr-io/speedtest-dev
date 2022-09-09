@@ -136,7 +136,7 @@
           </div>
         </div>
       </div>
-      <MapsComponent v-if="userPos && serverPos" :userPosition="userPos" :serverPosition="serverPos" />
+      <MapsComponent v-if="userPos.lat && userPos.lng" :userPosition="userPos" :serverPosition="serverPos" />
     </section>
     <footer class="navbar">
       <img src="/src/assets/svg/footer-logo.svg" class="navbar__footer--logo" />
@@ -187,9 +187,15 @@ export default {
 
     // const { coords } = useGeolocation();
 
-    const userPos = ref(undefined);
+    const userPos = reactive({
+      lat: undefined,
+      lng: undefined
+    });
 
-    const serverPos = ref(undefined);
+    const serverPos = reactive({
+      lat: undefined,
+      lng: undefined
+    });
 
     return {
       service,
@@ -214,13 +220,13 @@ export default {
         serverLocation: "",
       }
       this.userPos = {
-        lat: data.latitude,
-        lng: data.longitude,
+        lat: +data.latitude,
+        lng: +data.longitude,
       }
-      this.serverPos = {
-        lat: -30.033056,
-        lng: -51.23,
-      }
+      // this.serverPos = {
+      //   lat: -30.033056,
+      //   lng: -51.23,
+      // }
     });
     
     setTimeout(() => {

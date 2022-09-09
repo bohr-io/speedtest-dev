@@ -57,16 +57,16 @@ export default {
         icon: userMarkerIcon.value,
       });
 
-      new google.maps.Marker({
-        position: serverPos.value,
-        map: map.value,
-        icon: serverMarkerIcon.value,
-      });
+      // new google.maps.Marker({
+      //   position: serverPos.value,
+      //   map: map.value,
+      //   icon: serverMarkerIcon.value,
+      // });
 
       const bounds = new google.maps.LatLngBounds();
 
       bounds.extend(userPos.value);
-      bounds.extend(serverPos.value);
+      // bounds.extend(serverPos.value);
 
       map.value.fitBounds(bounds);
     });
