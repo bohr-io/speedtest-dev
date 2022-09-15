@@ -23,7 +23,7 @@ export default {
       lng: props.userPosition.lng,
     }));
 
-    const serverPos = computed(() => ({
+    const serverPos = computed(() => (props.serverPosition && {
       lat: props.serverPosition.lat,
       lng: props.serverPosition.lng,
     }));
@@ -57,16 +57,25 @@ export default {
         icon: userMarkerIcon.value,
       });
 
-      // new google.maps.Marker({
-      //   position: serverPos.value,
-      //   map: map.value,
-      //   icon: serverMarkerIcon.value,
-      // });
+      if (serverPos) {
+        new google.maps.Marker({
+          position: serverPos.value,
+          map: map.value,
+          icon: serverMarkerIcon.value,
+        });
+
+        new google.maps.Polyline({
+          map: map.value,
+          path: [userPos.value, serverPos.value],
+          geodesic: true,
+          strokeColor: '#FF0000'
+        });
+      }
 
       const bounds = new google.maps.LatLngBounds();
 
       bounds.extend(userPos.value);
-      // bounds.extend(serverPos.value);
+      serverPos && bounds.extend(serverPos.value);
 
       map.value.fitBounds(bounds);
     });

@@ -150,6 +150,7 @@ import speedTestService from "./speedTest";
 import LoadingComponent from "./components/LoadingComponent.vue";
 import MapsComponent from "./components/MapsComponent.vue";
 import SpeedometerComponent from "./components/SpeedometerComponent.vue";
+import cfDataCenters from './assets/json/cfDataCenters.json';
 export default {
   components: {
     LoadingComponent,
@@ -213,20 +214,21 @@ export default {
 
   mounted() {
     const address = this.service.addressSpeed().then((data) => {
+      const serverLocation = cfDataCenters[data.colo];
       this.locationData = {
         ip: data.remoteAddress,
         network: data.asOrganization,
         userLocation: `${data.city}, ${data.region}`,
-        serverLocation: "",
+        serverLocation: serverLocation ? `${serverLocation.city}, ${serverLocation.country}` : data.colo,
       }
       this.userPos = {
         lat: +data.latitude,
         lng: +data.longitude,
       }
-      // this.serverPos = {
-      //   lat: -30.033056,
-      //   lng: -51.23,
-      // }
+      this.serverPos = serverLocation ? {
+        lat: serverLocation.lat,
+        lng: serverLocation.lon,
+      } : undefined;
     });
     
     setTimeout(() => {
