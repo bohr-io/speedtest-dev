@@ -42,12 +42,15 @@ export default class {
     async testUploadSpeed(fileSize) {
         const cacheBuster = "?nnn=" + (new Date()).getTime();
         const upUrlPath = `${this.API_URL}/bohr_speed_upload?bytes=${fileSize}`;
-        const request = new Request(upUrlPath + cacheBuster);
-      
-        const response = await fetch(request, {
+        const request = new Request(upUrlPath + cacheBuster, {
             method: 'POST',
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
             body: new Blob([new ArrayBuffer(fileSize)], {type: 'application/octet-stream'})
         });
+      
+        const response = await fetch(request);
 
         if (!response.ok) {
             throw new Error(response.statusText);
