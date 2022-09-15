@@ -271,43 +271,42 @@ export default {
         upload: "",
         ping: "",
       };
+      this.startDownloadUploadTest();
+    },
+    async startDownloadUploadTest() {
       await new Promise(resolve => setTimeout(resolve, 3000));
-      await this.startDownloadTest();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await this.startUploadTest();
-    },
-    async startDownloadTest() {
+      // 100 kB
       this.speedTest.download = await this.service.testDownloadSpeed(100000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.download = await this.service.testDownloadSpeed(1000000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.download = await this.service.testDownloadSpeed(10000000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.download = await this.service.testDownloadSpeed(25000000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.download = await this.service.testDownloadSpeed(100000000);
-      // this.$forceUpdate();
-      return true;
-    },
-    async startUploadTest() {
-      this.speedTest.upload = await this.service.testUploadSpeed(100000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.upload = await this.service.testUploadSpeed(1000000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.upload = await this.service.testUploadSpeed(10000000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.upload = await this.service.testUploadSpeed(25000000);
-      // this.$forceUpdate();
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // this.speedTest.upload = await this.service.testUploadSpeed(100000000);
       this.$forceUpdate();
+      this.speedTest.upload = await this.service.testUploadSpeed(100000);
+      this.$forceUpdate();
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // 1 MB
+      this.speedTest.download = await this.service.testDownloadSpeed(1000000);
+      this.$forceUpdate();
+      this.speedTest.upload = await this.service.testUploadSpeed(1000000);
+      this.$forceUpdate();
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // 10 MB
+      this.speedTest.download = await this.service.testDownloadSpeed(10000000);
+      this.$forceUpdate();
+      this.speedTest.upload = await this.service.testUploadSpeed(10000000);
+      this.$forceUpdate();
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // 25 MB
+      this.speedTest.download = await this.service.testDownloadSpeed(25000000);
+      this.$forceUpdate();
+      this.speedTest.upload = await this.service.testUploadSpeed(25000000);
+      this.$forceUpdate();
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // 100 MB
+      this.speedTest.download = await this.service.testDownloadSpeed(100000000);
+      this.$forceUpdate();
+      
       return true;
     }
   },
