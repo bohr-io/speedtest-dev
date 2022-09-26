@@ -56,31 +56,30 @@ export default class {
     }
 
     calcPerformanceSpeedMbps(duration, fileSize) {
-        const duration = duration / 1000;
         const bitsLoaded = fileSize * 8;
-        const speedBps = (bitsLoaded / duration).toFixed(2);
+        const speedBps = (bitsLoaded / (duration / 1000)).toFixed(2);
         const speedKbps = (speedBps / 1024).toFixed(2);
         const speedMbps = (speedKbps / 1024).toFixed(2);
         return speedMbps;
     }
 
     async testPingSpeed() {
-        const perfUpload = await getUploadPerformance(0);
-        const pingUpload = perfUpload.responseStart - perfUpload.requestStart;
+        const perfUpload = await this.getUploadPerformance(0);
+        const pingUpload = perfUpload[0].responseStart - perfUpload[0].requestStart;
 
-        const perfDownload = await getDownloadPerformance(0);
-        const pingDownload = perfDownload.responseStart - perfDownload.requestStart;
+        const perfDownload = await this.getDownloadPerformance(0);
+        const pingDownload = perfDownload[0].responseStart - perfDownload[0].requestStart;
 
-        return (pingUpload + pingDownload)/2;
+        return ((pingUpload + pingDownload)/2).toFixed(2);
     }
 
     async testDownloadSpeed(fileSize) {
-        const perf = await getDownloadPerformance(fileSize);
-        return calcPerformanceSpeedMbps(perf[0].duration, perf[0].transferSize);
+        const perf = await this.getDownloadPerformance(fileSize);
+        return this.calcPerformanceSpeedMbps(perf[0].duration, perf[0].transferSize);
     }
 
     async testUploadSpeed(fileSize) {
-        const perf = await getUploadPerformance(fileSize);
-        return calcPerformanceSpeedMbps(perf[0].duration, fileSize);
+        const perf = await this.getUploadPerformance(fileSize);
+        return this.calcPerformanceSpeedMbps(perf[0].duration, fileSize);
     }
 };
