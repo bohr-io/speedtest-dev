@@ -271,6 +271,7 @@ export default {
         upload: "",
         ping: "",
       };
+      this.speedTest.ping = await this.service.testPingSpeed();
       this.startDownloadUploadTest();
     },
     async startDownloadUploadTest() {
