@@ -1,6 +1,7 @@
 export default class {
     constructor(API_URL) {
         this.API_URL = API_URL || "https://bohr.io";
+        this.abortController = new AbortController();
     }
 
     async addressSpeed() {
@@ -8,7 +9,7 @@ export default class {
         const addressUrlPath = `${this.API_URL}/bohr_speed_address`;
         const request = new Request(addressUrlPath + cacheBuster);
 
-        const response = await fetch(request);
+        const response = await fetch(request, { signal: this.abortController.signal });
 
         if (!response.ok) {
             throw new Error(response.statusText);
@@ -22,7 +23,7 @@ export default class {
         const downUrlPath = `${this.API_URL}/bohr_speed_download?bytes=${fileSize}`;
         const request = new Request(downUrlPath + cacheBuster);
       
-        const response = await fetch(request);
+        const response = await fetch(request, { signal: this.abortController.signal });
         
         if (!response.ok) {
             throw new Error(response.statusText);
@@ -44,7 +45,7 @@ export default class {
             body: new Blob([new ArrayBuffer(fileSize)], {type: 'application/octet-stream'})
         });
       
-        const response = await fetch(request);
+        const response = await fetch(request, { signal: this.abortController.signal });
 
         if (!response.ok) {
             throw new Error(response.statusText);

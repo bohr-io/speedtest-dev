@@ -22,7 +22,7 @@
           <button class="speed__block--refresh" @click.prevent="restartTest()">
             <img src="/src/assets/svg/refresh.svg" alt="" />
           </button>
-          <SpeedometerComponent class="speed__block--image" />
+          <SpeedometerComponent class="speed__block--image" :speedRate="+speedTest.download" />
           <div class="speed__block--content">
             <div class="speed__block--data">
               <span
@@ -212,8 +212,8 @@ export default {
     };
   },
 
-  mounted() {
-    const address = this.service.addressSpeed().then((data) => {
+  async mounted() {
+    this.service.addressSpeed().then((data) => {
       const serverLocation = cfDataCenters[data.colo];
       this.locationData = {
         ip: data.remoteAddress,
@@ -230,10 +230,11 @@ export default {
         lng: serverLocation.lon,
       } : undefined;
     });
-    
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 3000);
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    this.isLoading = false;
+    this.startSpeedTest();
+  
 
     // setTimeout(() => {
     //   this.locationData = {
@@ -251,9 +252,7 @@ export default {
     //     upload: "14.3",
     //     ping: "20.4",
     //   };
-    // }, 7000);
-
-    this.startSpeedTest();
+    // }, 7000);    
   },
 
   updated() {
@@ -262,16 +261,22 @@ export default {
 
   methods: {
     restartTest() {
-      console.log("Restart test");
+      this.service.abortController.abort();
+      this.service.abortController = new AbortController();
+      this.speedBlockLoading = true;
+      this.startSpeedTest();
     },
-    async startSpeedTest() {
+    async startSpeedTest() {      
       this.speedBlockLoading = false;
       this.speedTest = {
         download: "",
         upload: "",
         ping: "",
       };
+      this.$forceUpdate();
+      await new Promise(resolve => setTimeout(resolve, 1000));
       this.speedTest.ping = await this.service.testPingSpeed();
+      this.$forceUpdate();
       this.startDownloadUploadTest();
     },
     async startDownloadUploadTest() {

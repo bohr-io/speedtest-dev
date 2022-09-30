@@ -64,11 +64,12 @@ export default {
   computed: {
     degSpeed() {
       let speed = "0deg";
-      if (this.speedRate >= 10) {
-        speed = "10deg";
-      }
-      if (this.speedRate >= 100) {
+      let speedFactor = this.speedRate / 1.5;
+
+      if (speedFactor >= 230) {
         speed = "230deg";
+      } else {
+        speed = parseInt(speedFactor) + "deg";
       }
 
       return speed;
